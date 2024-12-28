@@ -12,3 +12,7 @@ Uses xmake. Install xmake on windows, linux or MacOS. This is designed to be the
 given as well to make compilation as smooth as possible.
 
 Type `xmake` in the current directory and it should build this project for your target platform.
+
+## Supported Platforms
+
+None yet, still in early pre-alpha.

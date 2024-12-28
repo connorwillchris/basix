@@ -5,11 +5,12 @@
 
 int main(int argc, char ** argv) {
     B_State * B = basix_open();
-
-    // do stuff with basix here!
-    
+    /*
+    Do stuff with BASIX HERE!
+    Will only include REPL for now...
+    */
+    basix_repl(B);
 
     basix_close(B);
-
     return 0;
 }
