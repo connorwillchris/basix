@@ -9,3 +9,4 @@ CppProperties.json
 
 # executable
 basix
+*.exe
