@@ -10,3 +10,7 @@ CppProperties.json
 # executable
 basix
 *.exe
+
+.zig-cache
+zig-out
+
