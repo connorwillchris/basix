@@ -5,7 +5,6 @@
 
 typedef struct bstate {
     int stuff_here;
-
     // stack stuff may be here too!
 };
 

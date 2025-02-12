@@ -2,15 +2,6 @@
 .xmake
 build
 
-# ignore Visual Studio, I hate Visual Studio
-.vs
-CppProperties.json
-*.sln
-
 # executable
 basix
 *.exe
-
-.zig-cache
-zig-out
-
