@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "basix.h"
+//#include "basix.h"
 #include "scanner.h"
 
 #define LINE_MAX 1024

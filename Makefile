@@ -3,3 +3,6 @@ all:
 	gcc -o basix \
 		src/main.c \
 		src/basix.c
+
+clean:
+	rm -rf basix
