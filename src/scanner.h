@@ -19,7 +19,7 @@ typedef enum {
 
     // NOTE Should line number be it's own token?
     T_STRING, T_IDENTIFIER, T_NUMBER,
-    T_LINE_NUMBER,
+    T_LINE_NUMBER, T_BACKSLASH,
 
     T_IF, T_ELSE, T_ELSEIF, T_THEN,
     T_WHILE, T_FOR, T_DONE, T_END,

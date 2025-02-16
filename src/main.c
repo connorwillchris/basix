@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-//#include "basix.h"
 #include "scanner.h"
 
 #define LINE_MAX 1024
@@ -42,7 +40,7 @@ char * read_file(const char * path) {
 }
 
 static int interpret(char * source) {
-    
+    init_scanner(source);
 }
 
 static int run_file(const char * filepath) {
@@ -64,6 +62,8 @@ static int repl() {
 
         interpret(line);
     }
+
+    return 0;
 }
 
 int main(int argc, char ** argv) {

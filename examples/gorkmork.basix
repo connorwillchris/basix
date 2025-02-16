@@ -1,29 +1,29 @@
 1 REM GORK MORK GAME
-10 SAY "Welcome to the game.";
+10 SAY "Welcome to the game."
 20 PAUSE 1; REM BELOW IS SUPPORT FOR NEWLINE
 30 SAY "What class are you? \
     1. Cleric \
     2. Fighter \
     3. Magic User \
     4. Thief";
-40 INPUT C;
+40 INPUT C
 50 IF C >= 1 AND C <= 4 THEN 80
 60 SAY "That's not between 1 and 4! Try again!"
 70 GOTO 40
 80 SAY "Let's play!"
 90 PAUSE 2
-100 "You wake up in a dark and dank smelling room."; REM SUPPORT FOR NO SPECIFIED SAY COMMAND
+100 "You wake up in a dark and dank smelling room." REM SUPPORT FOR NO SPECIFIED SAY COMMAND
 110 "The smell of mildew and dank swamp water fills your nose. You can \
     barely see five feet in front of your face."
 120 GOSUB 1000
 130 IF I == "TAKE LANTERN" OR I == "PICK UP LANTERN" THEN 160
-140 "I DON'T KNOW HOW TO " + I;
+140 "I DON'T KNOW HOW TO " + I
 150 GOTO 120
 160 "You pick up the lantern on the table. It is partially filled with oil, \
     and you can hear it jostle in the casket. You light it with a match and \
-    finally you are able to see all around you.";
+    finally you are able to see all around you."
 990 END
 1000 REM SUBROUTINE FOR PARSING COMMANDS
-1010 "WHAT DO YOU DO?"; REM SUBROUTINE SUPPORT
-1020 INPUT I;
-1030 RETURN; REM PUT SUBROUTINE ON THE STACK AND RETURN
+1010 "WHAT DO YOU DO?" REM SUBROUTINE SUPPORT
+1020 INPUT I
+1030 RETURN REM PUT SUBROUTINE ON THE STACK AND RETURN

@@ -134,13 +134,12 @@ static TokenType identifier_type() {
         );
         case 'e':
             if (scanner.current - scanner.start > 1) {
-                switch (
-                    check_keyword(
-                        //2, 3, "lse",
-                    )
-                ) {
-                    case T_ELSE:
-
+                switch (scanner.start[1]) {
+                    case 'l':
+                        if (scanner.current - scanner.start > 2) {
+                             
+                        }
+                    case 'n': return check_keyword(1, 1, "d", T_END);
                 }
             }
     }
