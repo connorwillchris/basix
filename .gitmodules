@@ -1,3 +1,3 @@
-[submodule "libs/espeak-ng"]
-	path = libs/espeak-ng
+[submodule "c/espeak-ng"]
+	path = c/espeak-ng
 	url = https://github.com/espeak-ng/espeak-ng.git

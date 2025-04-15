@@ -1,6 +1,2 @@
-# build system
-build
-
-# executable
-basix
-*.exe
+zig-out/*
+.zig-cache/*
