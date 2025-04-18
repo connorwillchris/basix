@@ -1,14 +1,14 @@
+/// By default, this basix interpreter uses the
+/// espeak-ng library for e-reader.
 const std = @import("std");
 const c = @cImport(
-    @cInclude("espeak/speak_lib.h"),
+    @cInclude("espeak-ng/speak_lib.h"),
 );
 
 const output = c.AUDIO_OUTPUT_SYNCH_PLAYBACK;
-var path = c.NULL;
+var path: *u8 = undefined;
 var user_data = c.NULL;
-var identifier: *c_int = c.NULL;
-
-//var text: [1024]u8 = undefined;
+var identifier: [*]c_uint = undefined;
 
 pub const Speaker = struct {
     buflength: c_int,
@@ -17,31 +17,31 @@ pub const Speaker = struct {
         buflength: c_int,
     ) !Speaker {
         const voicename = "English";
-        //const buflength = 1024;
         const options = 0;
 
-        c.espeak_Initialize(
+        _ = c.espeak_Initialize(
             output,
             buflength,
             path,
             options,
         );
 
-        c.espeak_SetVoiceByName(voicename);
+        _ = c.espeak_SetVoiceByName(voicename);
+
         return .{
             .buflength = buflength,
         };
     }
 
-    pub fn say(self: Speaker, text: []const u8) !void {
+    pub fn say(self: Speaker, text: ?*const anyopaque) !void {
         const position = 0;
         const position_type = 0;
         const end_position = 0;
         const flags = c.espeakCHARS_AUTO;
 
-        c.espeak_Synth(
+        _ = c.espeak_Synth(
             text,
-            self.buflength,
+            @intCast(self.buflength),
             position,
             position_type,
             end_position,
@@ -51,8 +51,9 @@ pub const Speaker = struct {
         );
     }
 
-    pub fn free() !void {
+    pub fn free(self: Speaker) void {
         // do nothing for now...
+        _ = self;
         return;
     }
 };
