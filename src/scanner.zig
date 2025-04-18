@@ -1,51 +1,22 @@
 const std = @import("std");
 
+pub var scanner: Scanner = undefined;
+
 pub const Scanner = struct {
-    str: []const u8,
-    current: usize,
+    start: []u8,
     line: usize,
 
     pub fn new(source: []const u8) Scanner {
-        return .{
-            .str = source,
-            .current = source,
-            .line = 0,
-        };
+        scanner.line = 1;
+        scanner.start = source;
     }
 
-    pub fn makeToken(self: Scanner, token_type: TokenType) Token {
-        const t: Token = .{
-            ._type = token_type,
-            //.start = self.start,
-            .length = self.current.len,
-            .line = self.line,
-        };
+    pub fn scanToken() Token {
+        scanner.start = scanner.start.ptr - scanner.start;
 
-        return t;
-    }
+        if (isAtEnd()) return makeToken(Token.Eof);
 
-    //pub fn isAtEnd(self: Scanner) bool {}
-
-    pub fn errorToken(
-        self: Scanner,
-        message: []const u8,
-    ) Token {
-        const t: Token = .{
-            ._type = TokenType.Error,
-            //.start = message,
-            .length = message.len,
-            .line = self.line,
-        };
-        return t;
-    }
-
-    fn isAtEnd(self: Scanner) bool {
-        return self.current.*[0..] == 0;
-    }
-
-    fn advance(self: Scanner) u8 {
-        //self.current;
-        return self.current[0];
+        return errorToken("Unexpected character");
     }
 };
 
@@ -104,25 +75,10 @@ pub const TokenType = enum {
 };
 
 pub const Token = struct {
-    _type: TokenType,
+    token_type: TokenType,
     start: []const u8,
     length: usize,
-    line: u64,
+    line: usize,
 
-    pub fn scanToken( //self: Token, scanner: *Scanner) Token {
-        scannerObj: *Scanner,
-    ) Token {
-        //scannerObj.start = scannerObj.current;
-
-        if (scannerObj.isAtEnd()) return scannerObj.makeToken(TokenType.Eof);
-
-        const c = scannerObj.advance();
-        switch (c) {
-            '(' => return scannerObj.makeToken(TokenType.LeftParen),
-            ')' => return scannerObj.makeToken(TokenType.RightParen),
-            else => {},
-        }
-
-        return scannerObj.errorToken("Unexpected character.");
-    }
+    //pub scanToken
 };

@@ -12,23 +12,11 @@ fn runFile() !void {
         \\20 goto 10;
         \\; # END
     ;
-    var scannerObj = scanner.Scanner.new(source);
-    var line: usize = 0;
-    while (true) {
-        const t = scanner.Token.scanToken(&scannerObj);
-        if (t.line != line) {
-            std.debug.print("{d:4} ", .{t.line});
-            line = t.line;
-        } else {
-            std.debug.print(" | ", .{});
-        }
-        std.debug.print("{} {d} {s}", .{
-            @TypeOf(t._type),
-            t.length,
-            t.start,
-        });
 
-        if (t._type == scanner.TokenType.Eof) break;
+    //var s = scanner.Scanner.new(source);
+    var line: u64 = -1;
+    while (true) {
+        const tok = scanner.Scanner.scanToken();
     }
 }
 
