@@ -7,17 +7,17 @@ pub fn main() !void {
 }
 
 fn runFile() !void {
-    const source =
-        \\10 print "hello world!";
-        \\20 goto 10;
-        \\; # END
-    ;
+    //const source =
+    //\\10 print "hello world!";
+    //\\20 goto 10;
+    //\\; # END
+    //;
 
     //var s = scanner.Scanner.new(source);
-    var line: u64 = -1;
-    while (true) {
-        const tok = scanner.Scanner.scanToken();
-    }
+    //var line: u64 = -1;
+    //while (true) {
+    // const tok = scanner.Scanner.scanToken();
+    //}
 }
 
 fn repl() !void {
