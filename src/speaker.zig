@@ -1,9 +1,7 @@
 /// By default, this basix interpreter uses the
 /// espeak-ng library for e-reader.
 const std = @import("std");
-const c = @cImport(
-    @cInclude("espeak-ng/speak_lib.h"),
-);
+const c = @cImport(@cInclude("espeak-ng/speak_lib.h"));
 
 const output = c.AUDIO_OUTPUT_SYNCH_PLAYBACK;
 var path: *u8 = undefined;

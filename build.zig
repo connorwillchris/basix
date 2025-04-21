@@ -12,8 +12,10 @@ pub fn build(b: *std.Build) void {
     if (builtin.target.os.tag == .windows) {
         exe.linkLibC();
         exe.addIncludePath(.{ .cwd_relative = "espeak-ng/src/include/" });
-        exe.addLibraryPath(.{ .cwd_relative = "C:/Program Files/eSpeak NG/" });
-        exe.linkSystemLibrary("libespeak-ng");
+        exe.addLibraryPath(.{ .cwd_relative = "espeak-ng/build/src/libespeak-ng/Debug/" });
+
+        exe.linkSystemLibrary("espeak-ng");
+        exe.linkSystemLibrary("msvcrt");
     } else {
         exe.linkLibC();
         exe.linkSystemLibrary("espeak-ng");

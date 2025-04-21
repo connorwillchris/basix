@@ -4,6 +4,7 @@ const scanner = @import("scanner.zig");
 
 pub fn main() !void {
     std.debug.print("Hello, world!\n", .{});
+
     const bufsize = 1024;
     const speak = try speaker.Speaker.new(bufsize);
     defer speak.free();
