@@ -6,6 +6,7 @@ pub const Scanner = struct {
     start: usize,
     current: usize,
     line: usize,
+    current: usize,
 
     pub fn new(source: []const u8) Scanner {
         return .{
@@ -17,6 +18,19 @@ pub const Scanner = struct {
         };
     }
 
+    pub fn scanToken(self: Scanner) Token {
+        scanner.start = scanner.start.ptr - scanner.start;
+
+        if (self.isAtEnd()) return makeToken(Token.Eof);
+
+        const c = self.advance();
+        switch (c) {
+            '(' => return self.makeToken(TokenType.LeftParen),
+            ')' => return self.makeToken(TokenType.RightParen),
+            else => {},
+        }
+
+        return errorToken("Unexpected character");
     pub fn scanTokens(self: Scanner) std.ArrayList(Token) {
         while (!self.isAtEnd()) {
             self.start = self.current;
@@ -84,6 +98,36 @@ pub const Token = struct {
 
     pub fn toString(self: Token) []const u8 {
         return " " ++ self.lexeme;
+    }
+
+    fn advance(self: Scanner) u8 {
+        self.current += 1;
+        return self.start[self.current];
+    }
+
+    fn isAtEnd(self: Scanner) bool {
+        return self.start[self.current] == 0;
+    }
+
+    fn makeToken(
+        self: Scanner,
+        token_type: TokenType,
+    ) Token {
+        return .{
+            .token_type = token_type,
+            .start = self.start,
+            .length = self.start.len - self.current,
+            .line = self.line,
+        };
+    }
+
+    fn errorToken(self: Scanner, message: []const u8) Token {
+        return .{
+            .token_type = TokenType.Error,
+            .start = message,
+            .length = message.len,
+            .line = self.line,
+        };
     }
 };
 
