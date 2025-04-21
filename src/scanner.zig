@@ -1,22 +1,89 @@
 const std = @import("std");
 
-pub var scanner: Scanner = undefined;
-
 pub const Scanner = struct {
-    start: []u8,
+    source: []const u8,
+    tokens: std.ArrayList(Token),
+    start: usize,
+    current: usize,
     line: usize,
 
     pub fn new(source: []const u8) Scanner {
-        scanner.line = 1;
-        scanner.start = source;
+        return .{
+            .source = source,
+            .tokens = undefined,
+            .start = 0,
+            .current = 0,
+            .line = 1,
+        };
     }
 
-    pub fn scanToken() Token {
-        scanner.start = scanner.start.ptr - scanner.start;
+    pub fn scanTokens(self: Scanner) std.ArrayList(Token) {
+        while (!self.isAtEnd()) {
+            self.start = self.current;
+            self.scanToken();
+        }
 
-        if (isAtEnd()) return makeToken(Token.Eof);
+        self.tokens.append(.{
+            .token_type = TokenType.Eof,
+            .lexeme = "",
+            .literal = null,
+            .line = self.line,
+        });
+        return self.tokens;
+    }
 
-        return errorToken("Unexpected character");
+    fn advance(self: Scanner) u8 {
+        self.current += 1;
+        return self.source[self.current];
+    }
+
+    fn scanToken(self: Scanner) void {
+        const c = self.advance();
+        switch (c) {
+            '(' => self.addToken(TokenType.LeftParen),
+            ')' => self.addToken(TokenType.RightParen),
+            ';' => self.addToken(TokenType.Semicolon),
+            else => {},
+        }
+    }
+
+    //fn addToken(self: Scanner, token_type: TokenType) void {
+    //self.addToken(token_type);
+    //}
+
+    fn addToken(self: Scanner, token_type: TokenType, literal: *void) void {
+        const text = self.source[self.start..self.current];
+        self.tokens.append(.{
+            .token_type = token_type,
+            .lexeme = text,
+            .literal = literal,
+            .line = self.line,
+        });
+    }
+};
+
+pub const Token = struct {
+    token_type: TokenType,
+    lexeme: []const u8,
+    literal: anyopaque,
+    line: usize,
+
+    pub fn new(
+        token_type: TokenType,
+        lexeme: []const u8,
+        literal: anyopaque,
+        line: usize,
+    ) Token {
+        return .{
+            .token_type = token_type,
+            .lexeme = lexeme,
+            .literal = literal,
+            .line = line,
+        };
+    }
+
+    pub fn toString(self: Token) []const u8 {
+        return " " ++ self.lexeme;
     }
 };
 
@@ -72,13 +139,4 @@ pub const TokenType = enum {
     While,
     Loop,
     End,
-};
-
-pub const Token = struct {
-    token_type: TokenType,
-    start: []const u8,
-    length: usize,
-    line: usize,
-
-    //pub scanToken
 };
