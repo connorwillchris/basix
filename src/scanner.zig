@@ -4,7 +4,7 @@ pub const Scanner = struct {
     source: []const u8,
     tokens: std.ArrayList(Token),
     start: usize,
-    current: usize,
+    //current: usize,
     line: usize,
     current: usize,
 
@@ -19,18 +19,20 @@ pub const Scanner = struct {
     }
 
     pub fn scanToken(self: Scanner) Token {
-        scanner.start = scanner.start.ptr - scanner.start;
-
+        //scanner.start = scanner.start.ptr - scanner.start;
         if (self.isAtEnd()) return makeToken(Token.Eof);
 
         const c = self.advance();
         switch (c) {
             '(' => return self.makeToken(TokenType.LeftParen),
             ')' => return self.makeToken(TokenType.RightParen),
+
             else => {},
         }
 
         return errorToken("Unexpected character");
+    }
+
     pub fn scanTokens(self: Scanner) std.ArrayList(Token) {
         while (!self.isAtEnd()) {
             self.start = self.current;
@@ -51,15 +53,16 @@ pub const Scanner = struct {
         return self.source[self.current];
     }
 
-    fn scanToken(self: Scanner) void {
-        const c = self.advance();
-        switch (c) {
-            '(' => self.addToken(TokenType.LeftParen),
-            ')' => self.addToken(TokenType.RightParen),
-            ';' => self.addToken(TokenType.Semicolon),
-            else => {},
-        }
-    }
+    //fn scanToken(self: Scanner) void {
+    //const c = self.advance();
+    //switch (c) {
+    //'(' => self.addToken(TokenType.LeftParen),
+    //')' => self.addToken(TokenType.RightParen),
+    //';' => self.addToken(TokenType.Semicolon),
+
+    //else => {},
+    //}
+    //}
 
     //fn addToken(self: Scanner, token_type: TokenType) void {
     //self.addToken(token_type);
