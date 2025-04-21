@@ -3,13 +3,21 @@ const speaker = @import("speaker.zig");
 const scanner = @import("scanner.zig");
 
 pub fn main() !void {
-    std.debug.print("Hello, world!\n", .{});
+    const program =
+        \\10 PRINT "HELLO WORLD";
+        \\20 GOTO 10;
+    ;
+    //const S = scanner.Scanner.new(program);
+    var s = scanner.Scanner.new(
+        std.heap.page_allocator,
+        program,
+    );
+    const tokens = try s.scanTokens();
 
-    const bufsize = 1024;
-    const speak = try speaker.Speaker.new(bufsize);
-    defer speak.free();
-
-    try speak.say("Hello, world!");
+    //s.tokens
+    for (tokens.items) |t| {
+        std.debug.print("{d}", .{t.line});
+    }
 }
 
 test "speak" {
