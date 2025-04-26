@@ -1,29 +1,32 @@
 const std = @import("std");
-const speaker = @import("speaker.zig");
+const speak = @import("speak.zig");
 const scanner = @import("scanner.zig");
+const chunk = @import("chunk.zig");
+
+const program =
+    \\10 PRINT "HELLO WORLD";
+    \\20 GOTO 10;
+;
 
 pub fn main() !void {
-    const program =
-        \\10 PRINT "HELLO WORLD";
-        \\20 GOTO 10;
-    ;
-    //const S = scanner.Scanner.new(program);
-    var s = scanner.Scanner.new(
-        std.heap.page_allocator,
-        program,
-    );
-    const tokens = try s.scanTokens();
+    const allocator = std.heap.page_allocator;
+    const c = chunk.Chunk.new(allocator);
 
-    //s.tokens
-    for (tokens.items) |t| {
-        std.debug.print("{d}", .{t.line});
-    }
+    c.writeChunk(chunk.Opcode.Return);
+}
+
+fn doShell() !void {
+    const bufsize: usize = 1024;
+    const speaker = try speak.Speaker.new(bufsize);
+    defer speaker.free();
+
+    try speaker.say("Hello, world!");
 }
 
 test "speak" {
     const bufsize: usize = 1024;
-    const s = try speaker.Speaker.new(bufsize);
-    defer s.free();
+    const speaker = try speak.Speaker.new(bufsize);
+    defer speaker.free();
 
-    try s.say("Hello, world!");
+    try speaker.say("Hello, world!");
 }

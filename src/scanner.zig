@@ -39,7 +39,7 @@ pub const Scanner = struct {
 
     fn scanToken(self: *Scanner) !void {
         const c = self.advance();
-        var is_first_number = true;
+        //var is_first_number = true;
 
         switch (c) {
             '(' => try self.addToken(TokenType.LeftParen),
@@ -52,12 +52,6 @@ pub const Scanner = struct {
             ';' => try self.addToken(TokenType.Semicolon),
             '*' => try self.addToken(TokenType.Asterisk),
             '/' => try self.addToken(TokenType.Slash),
-            '0'...'9' => {
-                if (is_first_number == true) {
-                    is_first_number = false;
-                    try self.setLineNumber();
-                }
-            },
 
             else => {},
         }
