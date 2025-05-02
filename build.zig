@@ -9,15 +9,10 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(exe);
 
-    if (builtin.target.os.tag == .windows) {
-        exe.linkLibC();
-        exe.addIncludePath(.{ .cwd_relative = "espeak-ng/src/include/" });
-        exe.addLibraryPath(.{ .cwd_relative = "espeak-ng/build/src/libespeak-ng/Debug/" });
+    exe.linkLibC();
+    exe.linkSystemLibrary("espeak-ng");
 
-        exe.linkSystemLibrary("espeak-ng");
-        exe.linkSystemLibrary("msvcrt");
-    } else {
-        exe.linkLibC();
-        exe.linkSystemLibrary("espeak-ng");
-    }
+    const run_exe = b.addRunArtifact(exe);
+    const run_step = b.step("run", "run the app");
+    run_step.dependOn(&run_exe.step);
 }

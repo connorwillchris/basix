@@ -9,15 +9,13 @@ const program =
 ;
 
 pub fn main() !void {
-    const allocator = std.heap.page_allocator;
-    const c = chunk.Chunk.new(allocator);
-
-    c.writeChunk(chunk.Opcode.Return);
+    // scanner here
 }
 
 fn doShell() !void {
     const bufsize: usize = 1024;
-    const speaker = try speak.Speaker.new(bufsize);
+    const speaker = try speak.Speaker
+        .new(bufsize);
     defer speaker.free();
 
     try speaker.say("Hello, world!");
@@ -25,7 +23,8 @@ fn doShell() !void {
 
 test "speak" {
     const bufsize: usize = 1024;
-    const speaker = try speak.Speaker.new(bufsize);
+    const speaker = try speak.Speaker
+        .new(bufsize);
     defer speaker.free();
 
     try speaker.say("Hello, world!");

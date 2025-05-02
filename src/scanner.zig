@@ -1,25 +1,21 @@
 const std = @import("std");
-const parseInt = std.fmt.parseInt;
 
 pub const Scanner = struct {
-    alloc: std.mem.Allocator,
-    tokens: std.ArrayList(Token),
+    allocator: std.mem.Allocator,
     source: []const u8,
-    start: usize,
-    current: usize,
-    line: u64,
+    tokens: std.ArrayList(Token),
+    start: usize = 0,
+    current: usize = 0,
+    line: usize = 1,
 
     pub fn new(
-        alloc: std.mem.Allocator,
+        allocator: std.mem.Allocator,
         source: []const u8,
     ) Scanner {
         return .{
-            .alloc = alloc,
+            .allocator = allocator,
             .source = source,
-            .tokens = std.ArrayList(Token).init(alloc),
-            .start = 0,
-            .current = 0,
-            .line = 1,
+            .tokens = std.ArrayList(Token).init(allocator),
         };
     }
 
@@ -29,93 +25,275 @@ pub const Scanner = struct {
             try self.scanToken();
         }
 
-        try self.addToken(TokenType.Eof);
+        try self.tokens.append(Token.new(
+            TokenType.EndOfFile,
+            "",
+            undefined,
+            self.line,
+        ));
         return self.tokens;
     }
 
     fn isAtEnd(self: *Scanner) bool {
-        return self.current == self.source.len - 1;
+        return self.current >= self.source.len;
     }
 
     fn scanToken(self: *Scanner) !void {
         const c = self.advance();
-        //var is_first_number = true;
-
         switch (c) {
-            '(' => try self.addToken(TokenType.LeftParen),
-            ')' => try self.addToken(TokenType.RightParen),
-            '[' => try self.addToken(TokenType.LeftBrace),
-            ']' => try self.addToken(TokenType.RightBrace),
-            ',' => try self.addToken(TokenType.Comma),
-            '-' => try self.addToken(TokenType.Minus),
-            '+' => try self.addToken(TokenType.Plus),
-            ';' => try self.addToken(TokenType.Semicolon),
-            '*' => try self.addToken(TokenType.Asterisk),
-            '/' => try self.addToken(TokenType.Slash),
+            '(' => try self.addToken(
+                TokenType.LeftParen,
+                undefined,
+            ),
+            ')' => try self.addToken(
+                TokenType.RightParen,
+                undefined,
+            ),
+            ',' => try self.addToken(
+                TokenType.Comma,
+                undefined,
+            ),
+            '-' => try self.addToken(
+                TokenType.Minus,
+                undefined,
+            ),
+            '+' => try self.addToken(TokenType.Plus, undefined),
+            '/' => try self.addToken(
+                TokenType.Slash,
+                undefined,
+            ),
+            '*' => try self.addToken(
+                TokenType.Star,
+                undefined,
+            ),
+            '!' => try self.addToken(
+                TokenType.Bang,
+                undefined,
+            ),
+            '=' => try self.addToken(
+                TokenType.Equal,
+                undefined,
+            ),
+            '<' => try self.addToken(TokenType.Greater, undefined),
+            '>' => try self.addToken(TokenType.Less, undefined),
 
-            else => {},
+            // comments here
+            '#' => {
+                while (self.peek() != '\n' and !self.isAtEnd()) {
+                    _ = self.advance();
+                }
+            },
+
+            ' ', '\r', '\t' => {
+                //std.debug.print("Found whitespace at: {d}:{d}\n", .{ self.line, self.current });
+            },
+            '\n' => {
+                try self.addToken(
+                    TokenType.Newline,
+                    undefined,
+                );
+                self.line += 1;
+            },
+            // strings
+            '\"' => {
+                try self.isString();
+            },
+
+            else => {
+                if (self.isDigit(c)) {
+                    try self.isNumber();
+                } else if (self.isAlpha(c)) {
+                    try self.isIdentifier();
+                } else {
+                    std.debug.print("Unexpected character.\n", .{});
+                }
+            },
         }
     }
 
-    fn advance(self: *Scanner) u8 {
-        self.current += 1;
-        return self.source[self.current];
+    fn peek(self: *Scanner) u8 {
+        if (self.isAtEnd()) return 0 else return self.source[self.current];
+    }
+
+    fn peekNext(self: *Scanner) u8 {
+        if (self.current + 1 >= self.source.len) return 0 else return self.source[self.current + 1];
     }
 
     fn addToken(
         self: *Scanner,
         token_type: TokenType,
-        //literal: *anyopaque,
+        literal: *const anyopaque,
     ) !void {
-        const text = self.source[self.start..self.current];
         try self.tokens.append(Token.new(
             token_type,
-            text,
-            //literal,
+            self.source[self.start..self.current],
+            literal,
             self.line,
         ));
     }
 
-    fn setLineNumber(self: *Scanner) !void {
-        //var buf: [16]u8 = undefined;
-        //var i: usize = 0;
-        var i: u32 = 0;
-        for (self.source[self.start..]) |char| {
-            //std.debug.print("{c}\n", .{char});
-            if (char != ' ') {
-                i += 1;
-            } else break;
-        }
-
-        //std.debug.print("{s} {d}\n", .{ self.source[(self.current - 1)..(self.current + i)], i });
-        //self.line = try std.fmt.parseInt(u32, self.source, 10);
-
-        for (self.source[(self.current - 1)..(self.current + i - 1)]) |t| {
-            std.debug.print("C: {c}\n", .{t});
-        }
+    fn advance(self: *Scanner) u8 {
+        self.current +%= 1;
+        return self.source[self.current - 1];
     }
 
-    //fn addNumber(self: *Scanner) void {}
+    fn match(
+        self: *Scanner,
+        expected: u8,
+    ) bool {
+        if (self.isAtEnd()) return false;
+        if (self.source[self.current] != expected) return false;
+
+        self.current += 1;
+        return true;
+    }
+
+    fn isString(self: *Scanner) !void {
+        while (self.peek() != '\"' and !self.isAtEnd()) {
+            if (self.peek() == '\n') self.line += 1;
+
+            _ = self.advance();
+        }
+
+        if (self.isAtEnd()) {
+            std.debug.print("Unterminated string on line: {d}\n", .{self.line});
+            return;
+        }
+
+        _ = self.advance();
+
+        const value = self.source[(self.start + 1)..(self.current - 1)];
+        try self.addToken(
+            TokenType.String,
+            @ptrCast(value),
+        );
+    }
+
+    fn isNumber(self: *Scanner) !void {
+        while (self.isDigit(self.peek())) _ = self.advance();
+        const value = try std.fmt.parseInt(
+            u32,
+            self.source[self.start..self.current],
+            10,
+        );
+
+        try self.addToken(
+            TokenType.Number,
+            &value,
+        );
+    }
+
+    fn isDigit(_: *Scanner, c: u8) bool {
+        return c >= '0' and c <= '9';
+    }
+
+    fn isAlpha(_: *Scanner, c: u8) bool {
+        return (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z') or c == '_';
+    }
+
+    fn isAlphaNumeric(self: *Scanner, c: u8) bool {
+        return self.isAlpha(c) or self.isDigit(c);
+    }
+
+    fn isIdentifier(self: *Scanner) !void {
+        while (self.isAlphaNumeric(self.peek())) _ = self.advance();
+        const text: []const u8 = self.source[self.start..self.current];
+
+        // do all the other tokens here.
+        var token_type: TokenType = undefined;
+        const buf = try std.ascii.allocLowerString(
+            self.allocator,
+            text,
+        );
+        defer self.allocator.free(buf);
+
+        // tokens
+        switch (self.start[0]) {
+            'a' => return self.checkKeyword(buf, "nd", TokenType.AND),
+
+            else => {},
+        }
+
+        if (token_type == TokenType.None) token_type = TokenType.Identifier;
+        try self.addToken(
+            token_type,
+            undefined,
+        );
+    }
+
+    fn checkKeyword(
+        _: *Scanner,
+        buf: []u8,
+        rest: []const u8,
+        token_type: TokenType,
+    ) TokenType {
+        if (std.mem.eql(
+            u8,
+            buf,
+            rest,
+        )) return token_type;
+
+        return TokenType.None;
+    }
 };
 
 pub const Token = struct {
     token_type: TokenType,
-    string: []const u8,
+    lexeme: []const u8,
+    literal: *const anyopaque,
     line: usize,
 
     pub fn new(
         token_type: TokenType,
-        string: []const u8,
-        //literal: *anyopaque,
+        lexeme: []const u8,
+        literal: *const anyopaque,
         line: usize,
     ) Token {
         return .{
             .token_type = token_type,
-            .string = string,
-            //.literal = literal,
+            .lexeme = lexeme,
+            .literal = literal,
             .line = line,
         };
     }
 };
 
-pub const TokenType = enum { Eof, Error, LeftParen, RightParen, LeftBrace, RightBrace, Comma, Minus, Plus, Semicolon, Slash, Asterisk, Identifier, LineNumber, String, Number, Bang, BangEqual, Equal, EqualEqual, Greater, GreaterEqual, Less, LessEqual, And, Or, Not, If, Else, ElseIf, Then, Print, Return, True, False, Let, Nil, While, Loop, End };
+pub const TokenType = enum {
+    // one or two character tokens
+    LeftParen,
+    RightParen,
+    Comma,
+    Semicolon,
+    Hash, // comment
+
+    Minus,
+    Plus,
+    Slash,
+    Star,
+
+    Bang,
+    BangEqual,
+    Equal,
+    EqualEqual,
+    Greater,
+    GreaterEqual,
+    Less,
+    LessEqual,
+    Newline,
+
+    // literals
+    Identifier,
+    String,
+    Number,
+
+    // keywords
+    AND,
+    GOSUB,
+    GOTO,
+    OR,
+    PRINT,
+
+    // ect tokens
+    EndOfFile,
+    None,
+};
