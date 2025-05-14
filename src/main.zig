@@ -1,5 +1,5 @@
 const std = @import("std");
-const speak = @import("speak.zig");
+const e_reader = @import("speak.zig");
 const Scanner = @import("scanner.zig").Scanner;
 
 const program =
@@ -28,8 +28,8 @@ pub fn main() !void {
 }
 
 fn doShell() !u8 {
-    const bufsize: usize = 1024;
-    const speaker = try speak.Speaker.new(bufsize);
+    const bufsize = 1024;
+    const speaker = try e_reader.Speaker.new(bufsize);
     defer speaker.free();
 
     try speaker.say("Hello, world!");
@@ -37,8 +37,7 @@ fn doShell() !u8 {
 
 test "speak" {
     const bufsize: usize = 1024;
-    const speaker = try speak.Speaker
-        .new(bufsize);
+    const speaker = try e_reader.Speaker.new(bufsize);
     defer speaker.free();
 
     try speaker.say("Hello, world!");

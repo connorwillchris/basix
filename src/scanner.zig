@@ -1,3 +1,8 @@
+/// TODO: Implement a backslash system
+/// for strings. Other than that, the system should
+/// work "as is".
+///
+/// Scanner program for scanning tokens.
 const std = @import("std");
 
 pub const Scanner = struct {
@@ -99,8 +104,6 @@ pub const Scanner = struct {
             },
 
             ' ', '\r', '\t' => {
-                //std.debug.print("Found whitespace at: {d}:{d}\n", .{ self.line, self.current });
-
                 // do nothing
             },
             '\n' => {
@@ -123,6 +126,9 @@ pub const Scanner = struct {
                     try self.isIdentifier();
                 } else {
                     // do nothing
+                    std.debug.print("Unexpected Character: {c}", .{
+                        c,
+                    });
                 }
             },
         }
