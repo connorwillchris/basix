@@ -49,6 +49,10 @@ pub const Scanner = struct {
                 TokenType.RightParen,
                 undefined,
             ),
+            ';' => try self.addToken(
+                TokenType.Semicolon,
+                undefined,
+            ),
             ',' => try self.addToken(
                 TokenType.Comma,
                 undefined,
@@ -74,8 +78,18 @@ pub const Scanner = struct {
                 TokenType.Equal,
                 undefined,
             ),
-            '<' => try self.addToken(TokenType.Greater, undefined),
-            '>' => try self.addToken(TokenType.Less, undefined),
+            '\\' => try self.addToken(
+                TokenType.Backslash,
+                undefined,
+            ),
+            '<' => try self.addToken(
+                TokenType.Greater,
+                undefined,
+            ),
+            '>' => try self.addToken(
+                TokenType.Less,
+                undefined,
+            ),
 
             // comments here
             '#' => {
@@ -86,6 +100,8 @@ pub const Scanner = struct {
 
             ' ', '\r', '\t' => {
                 //std.debug.print("Found whitespace at: {d}:{d}\n", .{ self.line, self.current });
+
+                // do nothing
             },
             '\n' => {
                 try self.addToken(
@@ -94,6 +110,7 @@ pub const Scanner = struct {
                 );
                 self.line += 1;
             },
+
             // strings
             '\"' => {
                 try self.isString();
@@ -105,7 +122,7 @@ pub const Scanner = struct {
                 } else if (self.isAlpha(c)) {
                     try self.isIdentifier();
                 } else {
-                    std.debug.print("Unexpected character.\n", .{});
+                    // do nothing
                 }
             },
         }
@@ -208,11 +225,10 @@ pub const Scanner = struct {
         defer self.allocator.free(buf);
 
         // tokens
-        switch (self.start[0]) {
-            'a' => return self.checkKeyword(buf, "nd", TokenType.AND),
-
-            else => {},
-        }
+        token_type = switch (self.source[0]) {
+            'a' => self.checkKeyword(buf, "nd", TokenType.AND),
+            else => TokenType.None,
+        };
 
         if (token_type == TokenType.None) token_type = TokenType.Identifier;
         try self.addToken(
@@ -266,6 +282,7 @@ pub const TokenType = enum {
     Semicolon,
     Hash, // comment
 
+    Backslash,
     Minus,
     Plus,
     Slash,

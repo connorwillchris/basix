@@ -9,6 +9,7 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(exe);
 
+    // use a specific e-reader, in this case ESPEAK-NG
     exe.linkLibC();
     exe.linkSystemLibrary("espeak-ng");
 
