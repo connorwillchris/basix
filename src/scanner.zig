@@ -66,7 +66,10 @@ pub const Scanner = struct {
                 TokenType.Minus,
                 undefined,
             ),
-            '+' => try self.addToken(TokenType.Plus, undefined),
+            '+' => try self.addToken(
+                TokenType.Plus,
+                undefined,
+            ),
             '/' => try self.addToken(
                 TokenType.Slash,
                 undefined,
@@ -109,6 +112,7 @@ pub const Scanner = struct {
             '\n' => {
                 try self.addToken(
                     TokenType.Newline,
+                    //&self.line,
                     undefined,
                 );
                 self.line += 1;
@@ -145,7 +149,7 @@ pub const Scanner = struct {
     fn addToken(
         self: *Scanner,
         token_type: TokenType,
-        literal: *const anyopaque,
+        literal: anytype,
     ) !void {
         try self.tokens.append(Token.new(
             token_type,
@@ -188,7 +192,7 @@ pub const Scanner = struct {
         const value = self.source[(self.start + 1)..(self.current - 1)];
         try self.addToken(
             TokenType.String,
-            @ptrCast(value),
+            value.ptr,
         );
     }
 
@@ -233,6 +237,13 @@ pub const Scanner = struct {
         // tokens
         token_type = switch (self.source[0]) {
             'a' => self.checkKeyword(buf, "nd", TokenType.AND),
+            'd' => self.checkKeyword(buf, "one", TokenType.DONE),
+            'e' => switch (self.source[1]) {
+                'l' => self.checkKeyword(buf, "se", TokenType.ELSE),
+
+                else => self.checkKeyword(buf, "seif", TokenType.ELSEIF),
+            },
+
             else => TokenType.None,
         };
 
@@ -280,6 +291,8 @@ pub const Token = struct {
     }
 };
 
+// AND,DONE,ELSE,ELSEIF,FALSE,FOR,GOSUB,GOTO,IF,LET,NIL,NOT,OR,RETURN,TRUE,WHILE
+// total of 16 keywords, less than LUA
 pub const TokenType = enum {
     // one or two character tokens
     LeftParen,
@@ -302,7 +315,7 @@ pub const TokenType = enum {
     GreaterEqual,
     Less,
     LessEqual,
-    Newline,
+    Newline, // for compatibility with line numbers
 
     // literals
     Identifier,
@@ -311,10 +324,21 @@ pub const TokenType = enum {
 
     // keywords
     AND,
+    DONE,
+    ELSE,
+    ELSEIF,
+    FALSE,
+    FOR,
     GOSUB,
     GOTO,
+    IF,
+    LET,
+    NIL,
+    NOT,
     OR,
-    PRINT,
+    RETURN,
+    TRUE,
+    WHILE,
 
     // ect tokens
     EndOfFile,

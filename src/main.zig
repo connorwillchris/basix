@@ -1,9 +1,10 @@
 const std = @import("std");
 const e_reader = @import("speak.zig");
 const Scanner = @import("scanner.zig").Scanner;
+const parser = @import("parser.zig");
 
 const program =
-    \\10 PRINT "HELLO WORLD \
+    \\10 ELSE ELSEIF AND "HELLO WORLD \
     \\WHAT IS YOUR NAME?";
     \\20 GOTO 10;
 ;
@@ -16,13 +17,9 @@ pub fn main() !void {
     const tokens = try scanner.scanTokens();
 
     for (tokens.items) |token| {
-        std.debug.print("token_type: {?} - lexeme: {s}\n", .{
+        std.debug.print("token_type: {?} - literal: {s}\n", .{
             token.token_type,
-            if (std.mem.eql(
-                u8,
-                token.lexeme,
-                "\n",
-            )) "NEWLINE" else token.lexeme,
+            token.lexeme,
         });
     }
 }
