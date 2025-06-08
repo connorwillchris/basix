@@ -130,9 +130,7 @@ pub const Scanner = struct {
                     try self.isIdentifier();
                 } else {
                     // do nothing
-                    std.debug.print("Unexpected Character: {c}", .{
-                        c,
-                    });
+                    std.debug.print("Unexpected Character: {c}", .{c});
                 }
             },
         }

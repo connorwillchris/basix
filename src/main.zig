@@ -1,10 +1,11 @@
 const std = @import("std");
 const e_reader = @import("speak.zig");
+const Speaker = e_reader.Speaker;
 const Scanner = @import("scanner.zig").Scanner;
 const parser = @import("parser.zig");
 
 const program =
-    \\10 ELSE ELSEIF AND "HELLO WORLD \
+    \\10 ELSE ELSEIF AND "HELLO WORLD
     \\WHAT IS YOUR NAME?";
     \\20 GOTO 10;
 ;
@@ -26,7 +27,7 @@ pub fn main() !void {
 
 fn doShell() !u8 {
     const bufsize = 1024;
-    const speaker = try e_reader.Speaker.new(bufsize);
+    const speaker = try Speaker.new(bufsize);
     defer speaker.free();
 
     try speaker.say("Hello, world!");
@@ -34,7 +35,7 @@ fn doShell() !u8 {
 
 test "speak" {
     const bufsize: usize = 1024;
-    const speaker = try e_reader.Speaker.new(bufsize);
+    const speaker = try Speaker.new(bufsize);
     defer speaker.free();
 
     try speaker.say("Hello, world!");

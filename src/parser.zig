@@ -1,4 +1,4 @@
-// Abstract Syntax Tree
+//! Parser file.
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
@@ -28,10 +28,21 @@ pub const Parser = struct {
 //
 // BNF FOR BASIX
 //
-// PROGRAM      ::= LINE*
-// LINE         ::= LINE_NUMBER CHUNK | CHUNK
+// PROGRAM      ::= LINE* | CHUNK
+// LINE         ::= LINE_NUMBER CHUNK
 // LINE_NUMBER  ::= ['0'-'9']*
 // CHUNK        ::= EXPRESSION |
 //                  ASSIGNMENT |
+//                  ...
+//
+// EXPRESSION   ::= IDENTIFIER OPERATOR VALUE
+// ASSIGNMENT   ::= "LET" IDENTIFIER '=' VALUE
+//
+// OPERATOR     ::= "+=" | "-=" | "*=" | "/="
+// IDENTIFIER   ::= '_' ['a'-'z'] ['A'-'Z']
+// VALUE        ::= NUMBER | -- number is 64-bit float
+//                  STRING |
+//                  IDENTIFIER |
+//                  BOOLEAN
 
 pub const Node = enum {};
